@@ -6,8 +6,10 @@
 #include "cpu.h"
 
 #define ZP(x) ((uint8_t) (x))
-#define STACK_PUSH(m) (m)->mem[(m)->sp-- + STACK_START]
-#define STACK_POP(m) (m)->mem[++(m)->sp + STACK_START]
+//#define STACK_PUSH(m) (m)->mem[(m)->sp-- + STACK_START]
+//#define STACK_POP(m) (m)->mem[++(m)->sp + STACK_START]
+#define STACK_PUSH(m) (m)->write_cb(m, m->read_cb(m, m->sp-- + STACK_START))
+#define STACK_POP(m) (m)->write_cb(m, m->read_cb(m, ++m->sp + STACK_START))
 
 #ifdef DEBUG
 #define debugf(...) fprintf(stderr, __VA_ARGS__)
@@ -20,11 +22,11 @@ static inline size_t mem_abs(uint8_t low, uint8_t high, uint8_t off) {
 }
 
 static inline size_t mem_indirect_index(cpu *m, uint8_t addr, uint8_t off) {
-    return mem_abs(m->mem[addr], m->mem[addr+1], off);
+    return mem_abs(m->read_cb(m, addr, NULL), m->read_cb(m, addr+1, NULL), off);
 }
 
 static inline size_t mem_indexed_indirect(cpu *m, uint8_t addr, uint8_t off) {
-    return mem_abs(m->mem[addr+off], m->mem[addr+off+1], 0);
+    return mem_abs(m->read_cb(m, addr+off, NULL), m->read_cb(m, addr+off+1, NULL), 0);
 }
 
 // set arg MUST be 16 bits, not 8, so that add results can fit into set.

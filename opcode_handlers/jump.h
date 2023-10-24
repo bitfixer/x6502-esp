@@ -6,7 +6,7 @@ case JMP_AB:
 case JMP_IN:
     arg1 = NEXT_BYTE(m);
     r1 = mem_abs(arg1, NEXT_BYTE(m), 0);
-    m->pc = mem_abs(m->mem[r1], m->mem[r1+1], 0);
+    m->pc = mem_abs(m->read_cb(m, r1, NULL), m->read_cb(m, r1+1, NULL), 0);
     break;
 
 case JSR_AB:

@@ -19,6 +19,12 @@
 // set if the emulator should wait for an interrupt before continuing
 #define EMU_FLAG_WAIT_FOR_INTERRUPT 0x02
 
+// read byte from memory <addr>
+//typedef uint8_t (*x6502_mread_cb)(cpu *cpu, uint16_t addr, void *user_data);
+
+// write <value> to memory <addr>
+//typedef void (*x6502_mwrite_cb)(cpu *cpu, uint16_t addr, uint8_t value, void *user_data);
+
 typedef struct {
     // program counter
     uint16_t pc;
@@ -34,12 +40,17 @@ typedef struct {
     uint8_t emu_flags;
     // set to nonzero if there is an outstanding interrupt
     uint8_t interrupt_waiting;
+
+    // moving RAM externally
     // RAM
-    uint8_t mem[MEMORY_SIZE];
+    //uint8_t mem[MEMORY_SIZE];
     // stores the address of memory modified by the last instruction
     uint16_t dirty_mem_addr;
     // the opcode of the last instruction run. for debugging only.
     uint8_t last_opcode;
+
+    uint8_t (*read_cb) (cpu *cpu, uint16_t addr, void *user_data);
+    void (*write_cb) (cpu *cpu, uint16_t addr, uint8_t value, void *user_data);
 } cpu;
 
 cpu * new_cpu(uint16_t pc_start);
