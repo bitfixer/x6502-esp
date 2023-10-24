@@ -35,13 +35,13 @@ typedef struct {
     // set to nonzero if there is an outstanding interrupt
     uint8_t interrupt_waiting;
     // RAM
-    uint8_t mem[MEMORY_SIZE];
+    uint8_t* mem;
     // stores the address of memory modified by the last instruction
     uint16_t dirty_mem_addr;
     // the opcode of the last instruction run. for debugging only.
     uint8_t last_opcode;
 } cpu;
 
-cpu * new_cpu(uint16_t pc_start);
+cpu * new_cpu(uint16_t pc_start, uint8_t* cpu_ram);
 
 #endif
